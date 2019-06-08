@@ -2,7 +2,7 @@
 A Python 3 CLI password generator
 
 ```
-usage: pypwgen [-h] [-A] [-0] [-y] [-b] [-s] [size]
+usage: pypwgen [-h] [-A] [-0] [-y] [-b] [-s] [-v] [size]
 
 Generate easier to remember passwords.
 
@@ -16,4 +16,5 @@ optional arguments:
   -y          include at least one symbol
   -b          avoid ambiguous characters
   -s          generate random password
+  -v          exclude vowels
 ```

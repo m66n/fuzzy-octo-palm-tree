@@ -54,7 +54,7 @@ UPPERS = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 LOWERS = list('abcdefghijklmnopqrstuvwxyz')
 SYMBOLS = list('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~')
 AMBIGUOUS = set('B8G6I1l0OQDS5Z2')
-VOWELS = list('01aeiouyAEIOUY')
+VOWELS = set('01aeiouyAEIOUY')
 
 ELEMENTS = [
     ('a', Element.VOWEL),
@@ -174,6 +174,8 @@ def password(size, options=Option.NONE):
         option_count += 1
     if options & Option.AMBIGUOUS:
         pool = [e for e in pool if e not in AMBIGUOUS]
+    if options & Option.NO_VOWELS:
+        pool = [e for e in pool if e not in VOWELS]
     while len(pw) < size:
         pw += secrets.choice(pool)
     if size > option_count:
@@ -194,6 +196,7 @@ def main():
     parser.add_argument('-y', action='store_true', help='include at least one symbol')
     parser.add_argument('-b', action='store_true', help='avoid ambiguous characters')
     parser.add_argument('-s', action='store_true', help='generate random password')
+    parser.add_argument('-v', action='store_true', help='exclude vowels')
     args = parser.parse_args()
     options = Option.DIGITS | Option.UPPERS
     if args.size < 1:
@@ -208,6 +211,8 @@ def main():
     if args.b:
         options |= Option.AMBIGUOUS
     if args.s or args.size < 5:
+        if args.v:
+            options |= Option.NO_VOWELS
         print(password(args.size, options))
     else:
         print(phonemes(args.size, options))
