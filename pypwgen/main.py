@@ -159,10 +159,10 @@ def password(size, options, remove):
 def main():
     parser = argparse.ArgumentParser(prog='pypwgen', description='Generate easier to remember passwords.')
     parser.add_argument('size', nargs='?', type=int, default=12, help='size of password (1-64, default 12)')
-    parser.add_argument('-A', nargs='?', help='no uppercase letters')
-    parser.add_argument('-0', nargs='?', help='no numerals', dest='zero')
-    parser.add_argument('-y', nargs='?', help='include at least one symbol')
-    parser.add_argument('-b', nargs='?', help='avoid ambiguous characters')
+    parser.add_argument('-A', action='store_true', help='no uppercase letters')
+    parser.add_argument('-0', action='store_true', help='no numerals', dest='zero')
+    parser.add_argument('-y', action='store_true', help='include at least one symbol')
+    parser.add_argument('-b', action='store_true', help='avoid ambiguous characters')
     args = parser.parse_args()
     options = Option.DIGITS | Option.UPPERS
     if args.A:
