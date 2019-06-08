@@ -24,6 +24,7 @@
 
 # based on pwgen (https://sourceforge.net/projects/pwgen/)
 
+import argparse
 import secrets
 import sys
 
@@ -156,9 +157,26 @@ def password(size, options, remove):
 
 
 def main():
-    options = Option.UPPERS | Option.DIGITS | Option.AMBIGUOUS
-    for i in range(10):
-        print(phonemes(20, options))
+    parser = argparse.ArgumentParser(prog='pypwgen', description='Generate easier to remember passwords.')
+    parser.add_argument('size', nargs='?', type=int, default=12, help='size of password (1-64, default 12)')
+    parser.add_argument('-A', nargs='?', help='no uppercase letters')
+    parser.add_argument('-0', nargs='?', help='no numerals', dest='zero')
+    parser.add_argument('-y', nargs='?', help='include at least one symbol')
+    parser.add_argument('-b', nargs='?', help='avoid ambiguous characters')
+    args = parser.parse_args()
+    options = Option.DIGITS | Option.UPPERS
+    if args.A:
+        options &= ~Option.UPPERS
+    if args.zero:
+        options &= ~Option.DIGITS
+    if args.y:
+        options |= Option.SYMBOLS
+    if args.b:
+        options |= Option.AMBIGUOUS
+    if args.size < 5:
+        pass  # do random password
+    else:
+        print(phonemes(min(args.size, 64), options))
     return 0
 
 
