@@ -47,6 +47,8 @@ class Option(Flag):
     NO_VOWELS = auto()
 
 
+MAX_LENGTH = 64
+
 DIGITS = list('0123456789')
 UPPERS = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
 LOWERS = list('abcdefghijklmnopqrstuvwxyz')
@@ -114,9 +116,9 @@ def phonemes(size, options=Option.NONE):
             continue
         if size < len(pw) + len(e[0]):
             continue
-        if options and options & Option.AMBIGUOUS and any([c in AMBIGUOUS for c in e[0]]):
+        if options & Option.AMBIGUOUS and any([c in AMBIGUOUS for c in e[0]]):
             continue
-        if options and options & Option.UPPERS and (len(pw) == 0 or e[1] & Element.CONSONANT) and secrets.randbelow(10) < 2:
+        if options & Option.UPPERS and (len(pw) == 0 or e[1] & Element.CONSONANT) and secrets.randbelow(10) < 2:
             e = (e[0].title(), e[1])
             if options & Option.AMBIGUOUS and any([c in AMBIGUOUS for c in e[0]]):
                 continue
@@ -124,7 +126,7 @@ def phonemes(size, options=Option.NONE):
         pw += e[0]
         if len(pw) == size:
             break
-        if options and options & Option.DIGITS and len(pw) > 0 and secrets.randbelow(10) < 3:
+        if options & Option.DIGITS and len(pw) > 0 and secrets.randbelow(10) < 3:
             d = secrets.choice(DIGITS)
             while options & Option.AMBIGUOUS and d in AMBIGUOUS:
                 d = secrets.choice(DIGITS)
@@ -133,7 +135,7 @@ def phonemes(size, options=Option.NONE):
             should_be = secrets.choice([Element.CONSONANT, Element.VOWEL])
             unhandled &= ~Option.DIGITS
             continue
-        if options and options & Option.SYMBOLS and len(pw) > 0 and secrets.randbelow(10) < 2:
+        if options & Option.SYMBOLS and len(pw) > 0 and secrets.randbelow(10) < 2:
             s = secrets.choice(SYMBOLS)
             while options & Option.AMBIGUOUS and s in AMBIGUOUS:
                 s = secrets.choice(SYMBOLS)
@@ -152,19 +154,51 @@ def phonemes(size, options=Option.NONE):
     return pw
 
 
-def password(size, options, remove):
-    pass
+def password(size, options=Option.NONE):
+    def a_in_b(a, b):
+        for e in a:
+            if e in b:
+                return True
+        return False
+    pw = ''
+    pool = LOWERS
+    option_count = 0
+    if options & Option.DIGITS:
+        pool += DIGITS
+        option_count += 1
+    if options & Option.UPPERS:
+        pool += UPPERS
+        option_count += 1
+    if options & Option.SYMBOLS:
+        pool += SYMBOLS
+        option_count += 1
+    if options & Option.AMBIGUOUS:
+        pool = [e for e in pool if e not in AMBIGUOUS]
+    while len(pw) < size:
+        pw += secrets.choice(pool)
+    if size > option_count:
+        if options & options.UPPERS and not a_in_b(UPPERS, pw):
+            return password(size, options)
+        if options & options.DIGITS and not a_in_b(DIGITS, pw):
+            return password(size, options)
+        if options & options.SYMBOLS and not a_in_b(SYMBOLS, pw):
+            return password(size, options)
+    return pw
 
 
 def main():
     parser = argparse.ArgumentParser(prog='pypwgen', description='Generate easier to remember passwords.')
     parser.add_argument('size', nargs='?', type=int, default=12, help='size of password (1-64, default 12)')
-    parser.add_argument('-A', action='store_true', help='no uppercase letters')
-    parser.add_argument('-0', action='store_true', help='no numerals', dest='zero')
+    parser.add_argument('-A', action='store_true', help='exclude uppercase letters')
+    parser.add_argument('-0', action='store_true', help='exclude numerals', dest='zero')
     parser.add_argument('-y', action='store_true', help='include at least one symbol')
     parser.add_argument('-b', action='store_true', help='avoid ambiguous characters')
+    parser.add_argument('-s', action='store_true', help='generate random password')
     args = parser.parse_args()
     options = Option.DIGITS | Option.UPPERS
+    if args.size < 1:
+        args.size = 1
+    args.size = min(args.size, MAX_LENGTH)
     if args.A:
         options &= ~Option.UPPERS
     if args.zero:
@@ -173,10 +207,10 @@ def main():
         options |= Option.SYMBOLS
     if args.b:
         options |= Option.AMBIGUOUS
-    if args.size < 5:
-        pass  # do random password
+    if args.s or args.size < 5:
+        print(password(args.size, options))
     else:
-        print(phonemes(min(args.size, 64), options))
+        print(phonemes(args.size, options))
     return 0
 
 
