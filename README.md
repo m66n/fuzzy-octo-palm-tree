@@ -14,7 +14,7 @@ optional arguments:
   -A          exclude uppercase letters
   -0          exclude numerals
   -y          include at least one symbol
-  -b          avoid ambiguous characters
+  -b, -B      avoid ambiguous characters
   -s          generate random password
-  -v          exclude vowels
+  -v          exclude vowels (in conjunction with -s)
 ```
