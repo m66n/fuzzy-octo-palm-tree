@@ -2,7 +2,7 @@
 
 # MIT License
 #
-# Copyright (c) 2019 Michael Chapman
+# Copyright (c) 2021 Michael Chapman
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -49,59 +49,59 @@ class Option(Flag):
 
 MAX_LENGTH = 64
 
-DIGITS = list('0123456789')
-UPPERS = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
-LOWERS = list('abcdefghijklmnopqrstuvwxyz')
-SYMBOLS = list('!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~')
-AMBIGUOUS = set('B8G6I1l0OQDS5Z2')
-VOWELS = set('01aeiouyAEIOUY')
+DIGITS = list("0123456789")
+UPPERS = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+LOWERS = list("abcdefghijklmnopqrstuvwxyz")
+SYMBOLS = list("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")
+AMBIGUOUS = set("B8G6I1l0OQDS5Z2")
+VOWELS = set("01aeiouyAEIOUY")
 
 ELEMENTS = [
-    ('a', Element.VOWEL),
-    ('ae', Element.VOWEL | Element.DIPTHONG),
-    ('ah', Element.VOWEL | Element.DIPTHONG),
-    ('ai', Element.VOWEL | Element.DIPTHONG),
-    ('b', Element.CONSONANT),
-    ('c', Element.CONSONANT),
-    ('ch', Element.CONSONANT | Element.DIPTHONG),
-    ('d', Element.CONSONANT),
-    ('e', Element.VOWEL),
-    ('ee', Element.VOWEL | Element.DIPTHONG),
-    ('ei', Element.VOWEL | Element.DIPTHONG),
-    ('f', Element.CONSONANT),
-    ('g', Element.CONSONANT),
-    ('gh', Element.CONSONANT | Element.DIPTHONG | Element.NOT_FIRST),
-    ('h', Element.CONSONANT),
-    ('i', Element.VOWEL),
-    ('ie', Element.VOWEL | Element.DIPTHONG),
-    ('j', Element.CONSONANT),
-    ('k', Element.CONSONANT),
-    ('l', Element.CONSONANT),
-    ('m', Element.CONSONANT),
-    ('n', Element.CONSONANT),
-    ('ng', Element.CONSONANT | Element.DIPTHONG | Element.NOT_FIRST),
-    ('o', Element.VOWEL),
-    ('oh', Element.VOWEL | Element.DIPTHONG),
-    ('oo', Element.VOWEL | Element.DIPTHONG),
-    ('p', Element.CONSONANT),
-    ('ph', Element.CONSONANT | Element.DIPTHONG),
-    ('qu', Element.CONSONANT | Element.DIPTHONG),
-    ('r', Element.CONSONANT),
-    ('s', Element.CONSONANT),
-    ('sh', Element.CONSONANT | Element.DIPTHONG),
-    ('t', Element.CONSONANT),
-    ('th', Element.CONSONANT | Element.DIPTHONG),
-    ('u', Element.VOWEL),
-    ('v', Element.CONSONANT),
-    ('w', Element.CONSONANT),
-    ('x', Element.CONSONANT),
-    ('y', Element.CONSONANT),
-    ('z', Element.CONSONANT)
+    ("a", Element.VOWEL),
+    ("ae", Element.VOWEL | Element.DIPTHONG),
+    ("ah", Element.VOWEL | Element.DIPTHONG),
+    ("ai", Element.VOWEL | Element.DIPTHONG),
+    ("b", Element.CONSONANT),
+    ("c", Element.CONSONANT),
+    ("ch", Element.CONSONANT | Element.DIPTHONG),
+    ("d", Element.CONSONANT),
+    ("e", Element.VOWEL),
+    ("ee", Element.VOWEL | Element.DIPTHONG),
+    ("ei", Element.VOWEL | Element.DIPTHONG),
+    ("f", Element.CONSONANT),
+    ("g", Element.CONSONANT),
+    ("gh", Element.CONSONANT | Element.DIPTHONG | Element.NOT_FIRST),
+    ("h", Element.CONSONANT),
+    ("i", Element.VOWEL),
+    ("ie", Element.VOWEL | Element.DIPTHONG),
+    ("j", Element.CONSONANT),
+    ("k", Element.CONSONANT),
+    ("l", Element.CONSONANT),
+    ("m", Element.CONSONANT),
+    ("n", Element.CONSONANT),
+    ("ng", Element.CONSONANT | Element.DIPTHONG | Element.NOT_FIRST),
+    ("o", Element.VOWEL),
+    ("oh", Element.VOWEL | Element.DIPTHONG),
+    ("oo", Element.VOWEL | Element.DIPTHONG),
+    ("p", Element.CONSONANT),
+    ("ph", Element.CONSONANT | Element.DIPTHONG),
+    ("qu", Element.CONSONANT | Element.DIPTHONG),
+    ("r", Element.CONSONANT),
+    ("s", Element.CONSONANT),
+    ("sh", Element.CONSONANT | Element.DIPTHONG),
+    ("t", Element.CONSONANT),
+    ("th", Element.CONSONANT | Element.DIPTHONG),
+    ("u", Element.VOWEL),
+    ("v", Element.CONSONANT),
+    ("w", Element.CONSONANT),
+    ("x", Element.CONSONANT),
+    ("y", Element.CONSONANT),
+    ("z", Element.CONSONANT),
 ]
 
 
 def phonemes(size, options=Option.NONE):
-    pw = ''
+    pw = ""
     prev = None
     should_be = secrets.choice([Element.CONSONANT, Element.VOWEL])
     unhandled = options & ~Option.AMBIGUOUS
@@ -111,14 +111,22 @@ def phonemes(size, options=Option.NONE):
             continue
         if not e[1] & should_be:
             continue
-        if (prev and prev & Element.VOWEL and e[1] & Element.VOWEL and
-                e[1] & Element.DIPTHONG):
+        if (
+            prev
+            and prev & Element.VOWEL
+            and e[1] & Element.VOWEL
+            and e[1] & Element.DIPTHONG
+        ):
             continue
         if size < len(pw) + len(e[0]):
             continue
         if options & Option.AMBIGUOUS and any([c in AMBIGUOUS for c in e[0]]):
             continue
-        if options & Option.UPPERS and (len(pw) == 0 or e[1] & Element.CONSONANT) and secrets.randbelow(10) < 2:
+        if (
+            options & Option.UPPERS
+            and (len(pw) == 0 or e[1] & Element.CONSONANT)
+            and secrets.randbelow(10) < 2
+        ):
             e = (e[0].title(), e[1])
             if options & Option.AMBIGUOUS and any([c in AMBIGUOUS for c in e[0]]):
                 continue
@@ -144,7 +152,11 @@ def phonemes(size, options=Option.NONE):
         if should_be & Element.CONSONANT:
             should_be = Element.VOWEL
         else:
-            if (prev and prev & Element.VOWEL) or e[1] & Element.DIPTHONG or secrets.randbelow(10) < 7:
+            if (
+                (prev and prev & Element.VOWEL)
+                or e[1] & Element.DIPTHONG
+                or secrets.randbelow(10) < 7
+            ):
                 should_be = Element.CONSONANT
             else:
                 should_be = Element.VOWEL
@@ -160,7 +172,8 @@ def password(size, options=Option.NONE):
             if e in b:
                 return True
         return False
-    pw = ''
+
+    pw = ""
     pool = LOWERS
     option_count = 0
     if options & Option.DIGITS:
@@ -189,14 +202,26 @@ def password(size, options=Option.NONE):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='pypwgen', description='Generate easier to remember passwords.')
-    parser.add_argument('size', nargs='?', type=int, default=12, help='size of password (1-64, default 12)')
-    parser.add_argument('-A', action='store_true', help='exclude uppercase letters')
-    parser.add_argument('-0', action='store_true', help='exclude numerals', dest='zero')
-    parser.add_argument('-y', action='store_true', help='include at least one symbol')
-    parser.add_argument('-b', action='store_true', help='avoid ambiguous characters')
-    parser.add_argument('-s', action='store_true', help='generate random password')
-    parser.add_argument('-v', action='store_true', help='exclude vowels')
+    parser = argparse.ArgumentParser(
+        prog="pypwgen", description="Generate easier to remember passwords."
+    )
+    parser.add_argument(
+        "size",
+        nargs="?",
+        type=int,
+        default=12,
+        help="size of password (1-64, default 12)",
+    )
+    parser.add_argument("-A", action="store_true", help="exclude uppercase letters")
+    parser.add_argument("-0", action="store_true", help="exclude numerals", dest="zero")
+    parser.add_argument("-y", action="store_true", help="include at least one symbol")
+    parser.add_argument(
+        "-b", "-B", action="store_true", help="avoid ambiguous characters"
+    )
+    parser.add_argument("-s", action="store_true", help="generate random password")
+    parser.add_argument(
+        "-v", action="store_true", help="exclude vowels (in conjunction with -s)"
+    )
     args = parser.parse_args()
     options = Option.DIGITS | Option.UPPERS
     if args.size < 1:
@@ -219,5 +244,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())
